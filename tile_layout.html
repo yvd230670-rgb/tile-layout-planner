@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плиточный калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app {
+            display: flex;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* ===== ЛЕВАЯ ПАНЕЛЬ ===== */
+        #panel {
+            width: 220px;
+            min-width: 220px;
+            background: #3252a5;
+            border-right: 2px solid #0f3460;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            color: #e0e0e0;
+        }
+
+        #panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        #panel::-webkit-scrollbar-thumb {
+            background: #0f3460;
+            border-radius: 2px;
+        }
+
+        #panel h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e94560;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        #panel h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            margin: 8px 0 4px 0;
+            border-top: 1px solid #1a1a3e;
+            padding-top: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100px;
+            padding: 6px 10px;
+            background: #0d1b2a;
+            border: 1px solid #1a3a5c;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.2s;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.15);
+        }
+
+        .input-group input::placeholder {
+            color: #64ffda;
+            font-size: 13px;
+        }
+
+        #roomName::placeholder {
+            color: #64ffda !important; /* или любой другой светлый цвет */
+            opacity: 1; /* чтобы цвет был плотным, а не полупрозрачным */
+        }
+
+        .input-group select {
+            width: 100px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238892b0'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+        }
+
+        .input-group select option {
+            background: #0d1b2a;
+            color: #e6f1ff;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #1a3a5c;
+            margin: 4px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            background: #0d1b2a;
+            border: 1px solid #1a3a5c;
+            border-radius: 6px;
+            color: #ccd6f6;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #1a3a5c;
+            border-color: #2a5a7c;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            border-color: #e94560;
+            color: #e94560;
+        }
+
+        .btn-danger:hover {
+            background: #e94560;
+            color: #fff;
+        }
+
+        .btn-success {
+            border-color: #4ecca3;
+            color: #64ffda;
+        }
+
+        .btn-success:hover {
+            background: #4ecca3;
+            color: #16213e;
+        }
+
+        .btn-primary {
+            border-color: #64ffda;
+            color: #64ffda;
+        }
+
+        .btn-primary:hover {
+            background: #64ffda;
+            color: #16213e;
+        }
+
+        /* ===== ОСНОВНАЯ ОБЛАСТЬ ===== */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a1a;
+        }
+
+        /* ===== ТУЛБАР ===== */
+        #toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #12122a;
+            border-bottom: 1px solid #1a3a5c;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            padding: 6px 16px;
+            background: transparent;
+            border: 1px solid #1a3a5c;
+            border-radius: 6px;
+            color: #8892b0;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tool-btn:hover {
+            background: #1a3a5c;
+            color: #ccd6f6;
+        }
+
+        .tool-btn.active {
+            background: #e94560;
+            border-color: #e94560;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.2);
+        }
+
+        #status {
+            margin-left: auto;
+            font-size: 13px;
+            color: #64ffda;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== КАНВАС ===== */
+        #canvasWrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            #panel {
+                width: 180px;
+                min-width: 180px;
+                padding: 12px;
+            }
+            .input-group input,
+            .input-group select {
+                width: 80px;
+            }
+            #toolbar {
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            .tool-btn {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            #status {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- ЛЕВАЯ ПАНЕЛЬ -->
+        <aside id="panel">
+            <h2>🧱 Плитка</h2>
+
+            <div class="input-group">
+                <label>Длина (мм)</label>
+                <input type="text" id="tileLength" placeholder="0">
+            </div>
+
+            <div class="input-group">
+                <label>Ширина (мм)</label>
+                <input type="text" id="tileWidth" placeholder="0">
+            </div>
+
+            <div class="input-group">
+                <label>Шов (мм)</label>
+                <input type="text" id="jointWidth" placeholder="0">
+            </div>
+
+            <div class="input-group">
+                <label>Тип раскладки</label>
+                <select id="layoutType">
+                    <option value="straight">Прямая</option>
+                    <option value="transverse">Поперечная</option>
+                    <option value="diagonal">Диагональ</option>
+                    <option value="offset">Со смещением</option>
+                </select>
+            </div>
+
+            <!-- ... существующие кнопки ... -->
+
+            <h3>🧱 Режим</h3>
+            <div class="btn-group">
+                <button id="modeToggleBtn" class="btn btn-primary" style="width:100%;">
+                    🧱 Режим плитки
+                </button>
+            </div>
+            <!-- Управление масштабом -->
+            <div style="margin-top: 10px;">
+                <label style="font-size: 12px; color: #ffffff; display: block; margin-bottom: 4px;">
+                    <span style="filter: brightness(0) invert(1);">🔍</span> Масштаб схемы
+                </label>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button id="zoomOutBtn" class="btn" style="flex:1; padding: 4px 8px;">−</button>
+                    <span id="zoomValue" style="min-width: 50px; text-align:center; color: #ffffff; font-size: 12px;">100%</span>
+                    <button id="zoomInBtn" class="btn" style="flex:1; padding: 4px 8px;">+</button>
+                </div>
+            </div>
+            <div id="tileControls" style="display: none; margin-top: 8px;">
+                <!-- Здесь позже появятся настройки плитки -->               
+            </div>
+
+            <h3>✏️ Контур</h3>
+
+            <div class="btn-group">
+                <button class="btn btn-danger" id="clearBtn">🗑 Очистить</button>
+                <button class="btn" id="undoBtn">↩ Назад</button>
+                <button class="btn btn-success" id="closeBtn">🔒 Замкнуть</button>
+            </div>
+
+            <hr>
+            
+        </aside>
+
+        <!-- ОСНОВНАЯ ОБЛАСТЬ -->
+        <main>
+            <div id="toolbar">
+                <button class="tool-btn active" data-tool="line">📏 Прямая</button>
+                <button class="tool-btn" data-tool="outer">↗ Угол наружу</button>
+                <button class="tool-btn" data-tool="inner">↘ Угол внутрь</button>
+                <span id="status">▶ Рисование контура</span>
+            </div>
+
+            <div id="canvasWrapper">
+                <canvas id="canvas"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <!-- Сначала подключаем основной файл с логикой -->
+    <script src="app.js"></script>
+    <!-- Потом подключаем сохранение (использует state из app.js) -->
+    <script src="save.js"></script>
+    <!-- Потом плитка (использует state из app.js) -->
+    <script src="tiles.js"></script>    
+</body>
+</html>
